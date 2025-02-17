@@ -1,4 +1,4 @@
-from model import SynopData, DecodedCSVData, session
+from python.model import SynopData, DecodedCSVData, session
 import os
 
 def extract_timestamp(filename):
@@ -16,10 +16,17 @@ def extract_timestamp(filename):
         raise ValueError(f"Error extracting timestamp from filename: {filename}. Details: {e}")
 
 def store_synop_data(filepath):
-    """Stores decoded Synop data in the SynopData table with timestamp."""
+    """Stores decoded Synop data in the SynopData table with timestamp, avoiding duplicates."""
     filename = os.path.basename(filepath)
     timestamp = extract_timestamp(filename)
+
+    # Check if the file already exists in the database
+    existing_record = session.query(SynopData).filter_by(filename=filename, timestamp=timestamp).first()
     
+    if existing_record:
+        print(f"Synop data '{filename}' already exists in the database. Skipping insert.")
+        return  # Skip inserting duplicate data
+
     with open(filepath, 'rb') as file:
         synop_record = SynopData(
             filename=filename,
@@ -32,10 +39,17 @@ def store_synop_data(filepath):
 
 
 def store_csv_data(filepath):
-    """Stores decoded CSV data in the DecodedCSVData table with timestamp."""
+    """Stores decoded CSV data in the DecodedCSVData table with timestamp, avoiding duplicates."""
     filename = os.path.basename(filepath)
     timestamp = extract_timestamp(filename)
+
+    # Check if the file already exists in the database
+    existing_record = session.query(DecodedCSVData).filter_by(filename=filename, timestamp=timestamp).first()
     
+    if existing_record:
+        print(f"CSV data '{filename}' already exists in the database. Skipping insert.")
+        return  # Skip inserting duplicate data
+
     with open(filepath, 'rb') as file:
         csv_record = DecodedCSVData(
             filename=filename,

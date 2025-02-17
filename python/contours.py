@@ -56,11 +56,14 @@ def read_data(timestamp):
     try:
         data_file = f"Decoded_Data/{timestamp}.csv"
         data = pd.read_csv(data_file)
-        return data
+        filtered_data = data[data["Elevation"] < 700]
+
+        return filtered_data
     except FileNotFoundError:
         print("File not found.")
     except Exception as e:
         print("An error occurred:", str(e))
+
 
 def generate_geojson(timestamp):
     data=read_data(timestamp)
@@ -142,8 +145,10 @@ def generate_geojson_diff_four(timestamp):
 # for x in a:
 #     generate_geojson_diff_four(f"20241219{x}")
 
-a=["00","03","06","09","12","15","18","21"]
-b=['01','02','03','04','05','06','07','08','09','10','11']
-for x in b:
-    for y in a:
-        generate_geojson(f"202502{x}{y}")
+# a=["00","03","06","09","12","15","18","21"]
+# b=['07','08','09','10','11','12','13','14','15','16','17']
+# for x in b:
+#     for y in a:
+#         generate_geojson(f"202502{x}{y}")
+
+# generate_geojson(f"2025021715")

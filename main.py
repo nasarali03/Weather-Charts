@@ -3,7 +3,10 @@ from python.decoding import process_synop_files
 from python.contours import generate_geojson
 from datetime import datetime, timedelta, timezone
 from python.delete import delete_file
-import time,os
+import time,os,sys
+
+# sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "python")))
+# print(sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "python"))))
 
 def main():
     now = datetime.now(timezone.utc)

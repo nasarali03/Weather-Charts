@@ -1,7 +1,7 @@
 from pymetdecoder import synop as s
 import pandas as pd
-import warnings,sys,os
-from controllers import store_csv_data
+import warnings,os
+from  python.controllers import store_csv_data
 
 # Suppress all warnings globally
 warnings.simplefilter("ignore")
@@ -607,9 +607,9 @@ def process_synop_files(station_codes_file, directory, output_directory,timestam
 station_codes_file = "static/WMO_stations_data.csv"
 directory = 'Synop'
 output_directory = "Decoded_Data"
-a=["00","03","06","09","12","15","18","21"]
-b=['01','02','03','04','05','06','07','08','09','10','11']
-for x in b:
-    for y in a:
-        process_synop_files(station_codes_file, directory, output_directory, f"202502{x}{y}")
+# a=["00","03","06","09","12","15","18","21"]
+# b=['07','08','09','10','11','12','13','14','15','16','17']
+# for x in b:
+#     for y in a:
+#         process_synop_files(station_codes_file, directory, output_directory, f"202502{x}{y}")
                 

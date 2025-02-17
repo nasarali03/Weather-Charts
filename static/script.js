@@ -22,7 +22,7 @@ utcNow.setUTCHours(intervalStartHour, 0, 0, 0); // Set hour, minute, second, and
 console.log(intervalStartHour);
 
 // var timestamp = utcNow.toISOString().replace(/[-:T]/g, "").slice(0, 10); // Format as "YYYYMMDDHH"
-var timestamp = "2025021100";
+var timestamp = "2025021700";
 console.log(timestamp);
 currentTimestamp = timestamp;
 
