@@ -1,6 +1,6 @@
 import os
 import requests
-from  python.controllers import store_synop_data
+# from  python.controllers import store_synop_data
 
 def download_file(timestamp):
 
@@ -21,7 +21,7 @@ def download_file(timestamp):
         with open(filename, 'wb') as    file:
             file.write(response.content)
         print(f"File saved as {filename}")
-        store_synop_data(filename)
+        # store_synop_data(filename)
         return True
     else:
         print(f"Failed to download the file. Status code: {response.status_code}")
@@ -32,5 +32,5 @@ def download_file(timestamp):
 #     for y in a:
 #         download_file(f"202502{x}{y}")
 # for x in a:
-#     download_file(f"20250203{x}")
+# download_file(f"2025022021")
 

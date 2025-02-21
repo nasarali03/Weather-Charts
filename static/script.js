@@ -14,16 +14,16 @@ var utcHours = String(now.getUTCHours()).padStart(2, "0");
 var now = new Date();
 var utcNow = new Date(now.toUTCString()); // Convert to UTC
 var hour = utcNow.getUTCHours();
-console.log(hour);
-console.log(hour);
+// console.log(hour);
+// console.log(hour);
 
 var intervalStartHour = Math.floor(hour / 3) * 3;
 utcNow.setUTCHours(intervalStartHour, 0, 0, 0); // Set hour, minute, second, and millisecond to the interval start
-console.log(intervalStartHour);
+// console.log(intervalStartHour);
 
-// var timestamp = utcNow.toISOString().replace(/[-:T]/g, "").slice(0, 10); // Format as "YYYYMMDDHH"
-var timestamp = "2025021700";
-console.log(timestamp);
+var timestamp = utcNow.toISOString().replace(/[-:T]/g, "").slice(0, 10); // Format as "YYYYMMDDHH"
+// var timestamp = "2025021700";
+// console.log(timestamp);
 currentTimestamp = timestamp;
 
 fetch("/list_data_files")

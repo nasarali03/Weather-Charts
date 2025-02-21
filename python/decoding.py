@@ -1,7 +1,7 @@
 from pymetdecoder import synop as s
 import pandas as pd
 import warnings,os
-from  python.controllers import store_csv_data
+# from  python.controllers import store_csv_data
 
 # Suppress all warnings globally
 warnings.simplefilter("ignore")
@@ -598,7 +598,7 @@ def process_synop_files(station_codes_file, directory, output_directory,timestam
             output_df = pd.DataFrame(output_data).sort_values(by=['Country'])
             output_df.to_csv(output_path, index=False, columns=output_df.columns)
             print(f"Decoded data saved to {output_path}")   
-            store_csv_data(output_path)
+            # store_csv_data(output_path)
         except Exception as e:
             print(f"Error processing file {filename}: {e}")
     else:

@@ -58,22 +58,28 @@ def get_geojson():
     
     return jsonify(data)
 
-@app.route('/api/temperature',methods=["GET"])
+@app.route('/api/temperature', methods=["GET"])
 def get_temperature_data():
-    time_stamp = request.args.get('timestamp', type=int)
-
-    data=read_data(time_stamp)
-    data = data.dropna(subset=['air_temp'])
-    data = data.drop_duplicates(subset='station_id')
-    lats = data['Latitude'].tolist()
-    lons = data['Longitude'].tolist()
-    air_temp = data['air_temp'].tolist()
-    stations = data['Station_Name'].tolist()
-    codes=data["station_id"].tolist()
-    
-    response_data = [{'lat': lat, 'lon': lon, 'temp': temp,'station':station,"code":code} for lat, lon, temp,station,code in zip(lats, lons, air_temp,stations,codes)]
-    
-    return jsonify(response_data)
+    try:
+        time_stamp = request.args.get('timestamp', type=int)
+        data = read_data(time_stamp)
+        
+        if data is None:
+            return jsonify({"error": "Data not found"}), 404
+        
+        data = data.dropna(subset=['air_temp'])
+        data = data.drop_duplicates(subset='station_id')
+        lats = data['Latitude'].tolist()
+        lons = data['Longitude'].tolist()
+        air_temp = data['air_temp'].tolist()
+        stations = data['Station_Name'].tolist()
+        codes = data["station_id"].tolist()
+        
+        response_data = [{'lat': lat, 'lon': lon, 'temp': temp, 'station': station, "code": code} for lat, lon, temp, station, code in zip(lats, lons, air_temp, stations, codes)]
+        
+        return jsonify(response_data)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/list_data_files')
 def list_html_files():
