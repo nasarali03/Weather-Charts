@@ -460,8 +460,6 @@ def process_evapotranspiration(decoded_synop):
     return amount_value,amoun_unit
 
 
-# File paths
-station_codes_file = "E:/WMO/WMO_stations_data.csv"
 
 def process_synop_files(station_codes_file, directory, output_directory,timestamp):
     # Read the CSV file
@@ -603,13 +601,18 @@ def process_synop_files(station_codes_file, directory, output_directory,timestam
             print(f"Error processing file {filename}: {e}")
     else:
         print(f"File {filename} does not exist in the directory {directory}")
-    
+
+if "RAILWAY_ENVIRONMENT" in os.environ:
+        BASE_DIR = "/app/data/"  # Railway persistent storage
+else:
+        BASE_DIR = os.path.join(os.getcwd(), "data")  # Local storage
+
 station_codes_file = "static/WMO_stations_data.csv"
-directory = 'Synop'
-output_directory = "Decoded_Data"
+directory = os.path.join(BASE_DIR, "Synop")
+output_directory = os.path.join(BASE_DIR, "Decoded_Data")
 # a=["00","03","06","09","12","15","18","21"]
 # b=['07','08','09','10','11','12','13','14','15','16','17']
 # for x in b:
 #     for y in a:
 #         process_synop_files(station_codes_file, directory, output_directory, f"202502{x}{y}")
-                
+process_synop_files(station_codes_file, directory, output_directory, f"2025022400")

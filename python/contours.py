@@ -52,30 +52,45 @@ def contours_to_geojson(contour_set):
                 })
     return {"type": "FeatureCollection", "features": features}
 
+def get_base_dir():
+    """Determine the correct base directory based on the environment."""
+    if "RAILWAY_ENVIRONMENT" in os.environ:
+        return "/app/data/"  # Railway persistent storage
+    return os.path.join(os.getcwd(), "data")  # Local storage
+
 def read_data(timestamp):
+    """Read CSV file and return data."""
     try:
-        data_file = f"Decoded_Data/{timestamp}.csv"
+        base_dir = get_base_dir()
+        data_file = os.path.join(base_dir, "Decoded_Data", f"{timestamp}.csv")
+
         data = pd.read_csv(data_file)
         filtered_data = data[data["Elevation"] < 700]
-
         return filtered_data
     except FileNotFoundError:
-        print("File not found.")
+        print(f"File not found: {data_file}")
+        return pd.DataFrame()  # Return an empty DataFrame instead of None
     except Exception as e:
         print("An error occurred:", str(e))
-
+        return pd.DataFrame()  # Return an empty DataFrame in case of other errors
 
 def generate_geojson(timestamp):
-    data=read_data(timestamp)
+    """Generate a GeoJSON file from the interpolated data."""
+    data = read_data(timestamp)
+
+    if data.empty:
+        print(f"No data available for timestamp: {timestamp}")
+        return
+
     data = data.drop_duplicates(subset='station_id')
     lats = data['Latitude'].values
     lons = data['Longitude'].values  
     pressure = data['pressure_sea_level'].values
 
-    valid_indices1 = ~np.isnan(pressure)
-    valid_lats = lats[valid_indices1]
-    valid_lons = lons[valid_indices1]
-    valid_pressure = pressure[valid_indices1].astype(float)
+    valid_indices = ~np.isnan(pressure)
+    valid_lats = lats[valid_indices]
+    valid_lons = lons[valid_indices]
+    valid_pressure = pressure[valid_indices].astype(float)
 
     lat_arr = np.linspace(valid_lats.min(), valid_lats.max(), 1000)
     lon_arr = np.linspace(valid_lons.min(), valid_lons.max(), 1000)
@@ -92,14 +107,19 @@ def generate_geojson(timestamp):
     
     # Create contours
     contours = plt.contour(lon_grid, lat_grid, pressure_grid, levels=levels)
-    output_dir = 'contours_data'
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
+
+    base_dir = get_base_dir()
+    output_dir = os.path.join(base_dir, "contours_data")
+    
+    os.makedirs(output_dir, exist_ok=True)  # Ensure directory exists
+    
     contour_geojson = contours_to_geojson(contours)
-    output_file = os.path.join(output_dir, f'{timestamp}.geojson')
+    output_file = os.path.join(output_dir, f"{timestamp}.geojson")
+
     with open(output_file, 'w') as f:
         json.dump(contour_geojson, f)
-    print(f'GeoJSON saved to {output_file}')
+
+    print(f"GeoJSON saved to {output_file}")
 
 def generate_geojson_diff_four(timestamp):
     data=read_data(timestamp)
@@ -151,4 +171,4 @@ def generate_geojson_diff_four(timestamp):
 #     for y in a:
 #         generate_geojson(f"202502{x}{y}")
 
-# generate_geojson(f"2025022103")
+generate_geojson(f"2025022400")

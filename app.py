@@ -26,16 +26,28 @@ Compress(app)
 cache = Cache(app, config={'CACHE_TYPE': 'simple'})
 
 
-def read_data(time_stamp):
+
+def get_base_dir():
+    """Determine the correct base directory based on the environment."""
+    if "RAILWAY_ENVIRONMENT" in os.environ:
+        return "/app/data/"  # Railway persistent storage
+    return os.path.join(os.getcwd(), "data")  # Local storage
+
+def read_data(timestamp):
+    """Read CSV file and return data."""
     try:
-        data_file = f"Decoded_Data/{time_stamp}.csv"
+        base_dir = get_base_dir()
+        data_file = os.path.join(base_dir, "Decoded_Data", f"{timestamp}.csv")
+
         data = pd.read_csv(data_file)
-        return data
+        filtered_data = data[data["Elevation"] < 700]
+        return filtered_data
     except FileNotFoundError:
-        print("File not found.")
+        print(f"File not found: {data_file}")
+        return pd.DataFrame()  # Return an empty DataFrame instead of None
     except Exception as e:
         print("An error occurred:", str(e))
-
+        return pd.DataFrame()  # Return an empty DataFrame in case of other errors
 
 @app.route("/")
 def home():    
@@ -45,7 +57,19 @@ def home():
 @cache.cached(timeout=60, query_string=True)
 def get_geojson():
     time_stamp = request.args.get('timestamp', type=int)
-    json_path = f"contours_data/{time_stamp}.geojson"
+    if "RAILWAY_ENVIRONMENT" in os.environ:
+        BASE_DIR = "/app/data/"  # Railway persistent storage
+    else:
+        BASE_DIR = os.path.join(os.getcwd(), "data")  # Local storage
+
+    # Define the directory for GeoJSON files
+    contours_dir = os.path.join(BASE_DIR, "contours_data")
+
+    # Ensure the directory exists
+    os.makedirs(contours_dir, exist_ok=True)
+
+    # Set the JSON file path
+    json_path = os.path.join(contours_dir, f"{time_stamp}.geojson")
     
     if not os.path.exists(json_path):
         return jsonify({"error": "File not found"}), 404
@@ -83,7 +107,8 @@ def get_temperature_data():
 
 @app.route('/list_data_files')
 def list_html_files():
-    geojson_dir = "contours_data"
+    base_dir = get_base_dir()
+    geojson_dir = os.path.join(base_dir, "contours_data")
     geojson_files = [f for f in os.listdir(geojson_dir) if f.endswith('.geojson')]
     return jsonify(geojson_files)
 

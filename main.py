@@ -19,7 +19,19 @@ def main():
         delete_file("contours_data")
         delete_file("Synop")
 
-    json_file_path = f"contours_data/{timestamp}.geojson"
+    if "RAILWAY_ENVIRONMENT" in os.environ:
+        BASE_DIR = "/app/data/"  # Railway persistent storage
+    else:
+        BASE_DIR = os.path.join(os.getcwd(), "data")  # Local storage
+
+    # Define the directory for GeoJSON files
+    contours_dir = os.path.join(BASE_DIR, "contours_data")
+
+    # Ensure the directory exists
+    os.makedirs(contours_dir, exist_ok=True)
+
+    # Set the JSON file path
+    json_file_path = os.path.join(contours_dir, f"{timestamp}.geojson")
     if os.path.exists(json_file_path):
         print("Data already downloaded")
         download_success = False
@@ -30,8 +42,14 @@ def main():
     if download_success:
         print("Decoding...")
         station_codes_file = "static/WMO_stations_data.csv"
-        directory = 'Synop'
-        output_directory = "Decoded_Data"
+        if "RAILWAY_ENVIRONMENT" in os.environ:
+            BASE_DIR = "/app/data/"  # Railway persistent storage
+        else:
+            BASE_DIR = os.path.join(os.getcwd(), "data")  # Local storage
+
+        station_codes_file = "static/WMO_stations_data.csv"
+        directory = os.path.join(BASE_DIR, "Synop")
+        output_directory = os.path.join(BASE_DIR, "Decoded_Data")
         process_synop_files(station_codes_file, directory, output_directory, timestamp)
         
         # Wait for some time to ensure data is saved
