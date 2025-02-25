@@ -57,6 +57,10 @@ def main():
         
         print("Generating Contours...")
         generate_geojson(timestamp)
+        return
+    else:
+        print(f"Data for {timestamp} not available yet. Skipping...")
+        return
     
 def schedule_task():
     while True:
