@@ -4,28 +4,16 @@ var button = document.getElementById("view-chart");
 var currentTimestamp = "";
 var availableTimes = {};
 var cachedData = {}; // Cache for fetched data
-
 var now = new Date();
 var utcYear = now.getUTCFullYear();
 var utcMonth = String(now.getUTCMonth() + 1).padStart(2, "0"); // Months are 0-indexed
 var utcDay = String(now.getUTCDate()).padStart(2, "0");
-var utcHours = String(now.getUTCHours()).padStart(2, "0");
 
-var now = new Date();
-var utcNow = new Date(now.toUTCString()); // Convert to UTC
-var hour = utcNow.getUTCHours();
-// console.log(hour);
-// console.log(hour);
-
-var intervalStartHour = Math.floor(hour / 3) * 3;
-utcNow.setUTCHours(intervalStartHour, 0, 0, 0); // Set hour, minute, second, and millisecond to the interval start
-// console.log(intervalStartHour);
+var utcNow = new Date(Date.UTC(utcYear, utcMonth - 1, utcDay, 0, 0, 0)); // Set time to 00:00:00 UTC
 
 var timestamp = utcNow.toISOString().replace(/[-:T]/g, "").slice(0, 10); // Format as "YYYYMMDDHH"
-// var timestamp = "2025021700";
-// console.log(timestamp);
 currentTimestamp = timestamp;
-
+console.log(currentTimestamp);
 fetch("/list_data_files")
   .then((response) => response.json())
   .then((files) => {
