@@ -13,7 +13,7 @@ var utcNow = new Date(Date.UTC(utcYear, utcMonth - 1, utcDay, 0, 0, 0)); // Set 
 
 var timestamp = utcNow.toISOString().replace(/[-:T]/g, "").slice(0, 10); // Format as "YYYYMMDDHH"
 currentTimestamp = timestamp;
-console.log(currentTimestamp);
+
 fetch("/list_data_files")
   .then((response) => response.json())
   .then((files) => {
