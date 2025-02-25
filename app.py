@@ -41,7 +41,7 @@ def read_data(timestamp):
 
         data = pd.read_csv(data_file)
         filtered_data = data[data["Elevation"] < 700]
-        return filtered_data
+        return data
     except FileNotFoundError:
         print(f"File not found: {data_file}")
         return pd.DataFrame()  # Return an empty DataFrame instead of None
