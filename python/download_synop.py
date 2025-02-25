@@ -40,5 +40,5 @@ def download_file(timestamp):
 #     for y in a:
 #         download_file(f"202502{x}{y}")
 # for x in a:
-download_file(f"2025022400")
+# download_file(f"2025022500")
 

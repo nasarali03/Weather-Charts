@@ -615,4 +615,4 @@ output_directory = os.path.join(BASE_DIR, "Decoded_Data")
 # for x in b:
 #     for y in a:
 #         process_synop_files(station_codes_file, directory, output_directory, f"202502{x}{y}")
-process_synop_files(station_codes_file, directory, output_directory, f"2025022400")
+# process_synop_files(station_codes_file, directory, output_directory, f"2025022500")
