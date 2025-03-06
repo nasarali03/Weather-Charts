@@ -8,10 +8,12 @@ var now = new Date();
 var utcYear = now.getUTCFullYear();
 var utcMonth = String(now.getUTCMonth() + 1).padStart(2, "0"); // Months are 0-indexed
 var utcDay = String(now.getUTCDate()).padStart(2, "0");
-
-var utcNow = new Date(Date.UTC(utcYear, utcMonth - 1, utcDay, 0, 0, 0)); // Set time to 00:00:00 UTC
+var utcHours = String(Math.floor(now.getUTCHours() / 3) * 3).padStart(2, "0"); // Get the last 3-hour timestamp
+// utcHours = utcHours - 3;
+var utcNow = new Date(Date.UTC(utcYear, utcMonth - 1, utcDay, utcHours, 0, 0)); // Set time to the last 3-hour mark
 
 var timestamp = utcNow.toISOString().replace(/[-:T]/g, "").slice(0, 10); // Format as "YYYYMMDDHH"
+console.log(timestamp);
 currentTimestamp = timestamp;
 
 fetch("/list_data_files")
@@ -193,7 +195,18 @@ var markers = new L.MarkerClusterGroup({
 });
 var geoJsonLayer;
 var pressureLabels = L.layerGroup();
+function showNotification(message) {
+  const notification = document.getElementById("notification");
+  notification.textContent = message;
+  notification.classList.remove("hidden");
+  notification.style.display = "block";
 
+  // Hide the notification after 3 seconds
+  setTimeout(() => {
+    notification.classList.add("hidden");
+    notification.style.display = "none";
+  }, 3000);
+}
 async function addTemperatureMarkers(timestamp) {
   markers.clearLayers();
   if (geoJsonLayer) {
@@ -217,9 +230,13 @@ async function addTemperatureMarkers(timestamp) {
     updateTemperatureMarkers(data, timestamp);
   } catch (error) {
     console.error("Error fetching or adding markers:", error);
-    // alert(
-    //   "Temperature data not available for the selected timestamp. Displaying data for the first timestamp of the day."
-    // );
+    showNotification("⚠️ Data not available for the selected timestamp.");
+    if (timestamp.endsWith("00")) {
+      console.warn(
+        "No data available for the fallback timestamp. Stopping execution."
+      );
+      return;
+    }
     // Fallback to the first timestamp of the day
     const fallbackTimestamp = timestamp.slice(0, 8) + "00"; // YYYYMMDD00
     currentTimestamp = timestamp.slice(0, 8) + "00";
@@ -290,7 +307,7 @@ async function fetchAndPlotGeoJSON(timestamp) {
       const fallbackTimestamp = timestamp.slice(0, 8) + "00"; // YYYYMMDD00
       currentTimestamp = timestamp.slice(0, 8) + "00";
       updateCurrentTimestamp();
-      await fetchAndPlotGeoJSON(fallbackTimestamp);
+      // await fetchAndPlotGeoJSON(fallbackTimestamp);
     });
 }
 
